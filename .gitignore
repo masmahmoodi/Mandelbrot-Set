@@ -1,0 +1,19 @@
+# ===== C++ build files =====
+*.o
+*.obj
+*.out
+*.exe
+
+# ===== Build folders =====
+build/
+bin/
+
+# ===== Makefile outputs =====
+mandelbrot
+a.out
+
+# ===== macOS junk =====
+.DS_Store
+
+# ===== VS Code =====
+.vscode/
