@@ -1,5 +1,4 @@
 #include <SFML/Graphics.hpp>
-#include <iostream>
 #include "ComplexPlane.h"
 
 using namespace sf;
@@ -33,9 +32,12 @@ int main() {
                 plane.setMouseLocation(Vector2i(event.mouseMove.x, event.mouseMove.y));
             }
 
-            // ==============================
-            // MOUSE CLICK ZOOM (FINAL FIX)
-            // ==============================
+            // =========================================
+            // CLICK ZOOM (WORKS ON VDI/MAC + REAL MOUSE)
+            // Left click  -> zoom in
+            // Right click -> zoom out (if SFML receives Mouse::Right)
+            // Ctrl+Left   -> zoom out (VDI/Mac "right click" fallback)
+            // =========================================
             if (event.type == Event::MouseButtonPressed) {
 
                 bool isCtrl =
@@ -46,22 +48,13 @@ int main() {
                     (event.mouseButton.button == Mouse::Right) ||
                     (event.mouseButton.button == Mouse::Left && isCtrl);
 
-                bool zoomIn =
-                    (event.mouseButton.button == Mouse::Left && !zoomOut);
-
                 plane.setCenter(Vector2i(event.mouseButton.x, event.mouseButton.y));
 
-                if (zoomOut) {
-                    plane.zoomOut();
-                }
-                else if (zoomIn) {
-                    plane.zoomIn();
-                }
+                if (zoomOut) plane.zoomOut();
+                else         plane.zoomIn();
             }
 
-            // ==============================
-            // MOUSE WHEEL ZOOM
-            // ==============================
+            // MOUSE WHEEL = ZOOM IN / OUT
             if (event.type == Event::MouseWheelScrolled) {
                 plane.setCenter(Vector2i(event.mouseWheelScroll.x,
                                          event.mouseWheelScroll.y));
@@ -73,9 +66,7 @@ int main() {
             }
         }
 
-        // ==============================
-        // KEYBOARD ZOOM (FALLBACK)
-        // ==============================
+        // KEYBOARD ZOOM (fallback)
         if (Keyboard::isKeyPressed(Keyboard::Equal) ||
             Keyboard::isKeyPressed(Keyboard::Add)) {
             plane.zoomIn();
