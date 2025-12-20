@@ -1,11 +1,9 @@
-
+// ComplexPlane.h
 #pragma once
 #include <SFML/Graphics.hpp>
 #include <complex>
-// extra credit
-#include <thread>
-// extra credit
-#include <vector>
+#include <thread> // extra credit
+#include <vector> // extra credit
 
 const unsigned int MAX_ITER = 64;
 const float BASE_WIDTH = 4.0f;
@@ -40,6 +38,5 @@ private:
     size_t countIterations(sf::Vector2f coord);
     void iterationsToRGB(size_t count, sf::Uint8& r, sf::Uint8& g, sf::Uint8& b);
 
-    // extra credit
-    void renderRows(int yStart, int yEnd);
+    void renderRows(int yStart, int yEnd); // extra credit
 };

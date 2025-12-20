@@ -1,15 +1,17 @@
-
 CXX = g++
-CXXFLAGS = -std=c++17 -O2 -Wall -Wextra -pthread
-LDFLAGS = -lsfml-graphics -lsfml-window -lsfml-system -pthread
+CXXFLAGS = -std=c++17
+LIBS = -lsfml-graphics -lsfml-window -lsfml-system
 
-TARGET = mandelbrot
-SRC = main.cpp ComplexPlane.cpp
+all: mandelbrot
 
-all: $(TARGET)
+mandelbrot: main.o ComplexPlane.o
+	$(CXX) $(CXXFLAGS) main.o ComplexPlane.o -o mandelbrot $(LIBS)
 
-$(TARGET): $(SRC)
-	$(CXX) $(CXXFLAGS) $(SRC) -o $(TARGET) $(LDFLAGS)
+main.o: main.cpp ComplexPlane.h
+	$(CXX) $(CXXFLAGS) -c main.cpp
+
+ComplexPlane.o: ComplexPlane.cpp ComplexPlane.h
+	$(CXX) $(CXXFLAGS) -c ComplexPlane.cpp
 
 clean:
-	rm -f $(TARGET)
+	rm -f *.o mandelbrot

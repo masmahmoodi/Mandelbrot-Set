@@ -1,4 +1,4 @@
-
+// ComplexPlane.cpp
 #include "ComplexPlane.h"
 #include <cmath>
 #include <sstream>
@@ -57,13 +57,12 @@ void ComplexPlane::iterationsToRGB(size_t count, Uint8& r, Uint8& g, Uint8& b) {
     b = static_cast<Uint8>(8.5 * (1 - t) * (1 - t) * (1 - t) * t * 255);
 }
 
-// extra credit
-void ComplexPlane::renderRows(int yStart, int yEnd) {
+void ComplexPlane::renderRows(int yStart, int yEnd) { // extra credit
     for (int y = yStart; y < yEnd; y++) {
         for (int x = 0; x < m_pixel_size.x; x++) {
             int index = y * m_pixel_size.x + x;
 
-            m_vArray[index].position = Vector2f((float)x, (float)y);
+            m_vArray[index].position = Vector2f(static_cast<float>(x), static_cast<float>(y));
 
             Vector2f coord = mapPixelToCoords(Vector2i(x, y));
             size_t count = countIterations(coord);
@@ -78,57 +77,42 @@ void ComplexPlane::renderRows(int yStart, int yEnd) {
 void ComplexPlane::updateRender() {
     if (m_state != State::CALCULATING) return;
 
-    // extra credit
-    unsigned int numThreads = std::thread::hardware_concurrency();
-    // extra credit
-    if (numThreads == 0) numThreads = 4;
-    // extra credit
-    if (numThreads > (unsigned)m_pixel_size.y) numThreads = m_pixel_size.y;
+    unsigned int numThreads = std::thread::hardware_concurrency(); // extra credit
+    if (numThreads == 0) numThreads = 4; // extra credit
+    if (numThreads > static_cast<unsigned int>(m_pixel_size.y)) numThreads = m_pixel_size.y; // extra credit
 
-    // extra credit
-    int rowsPerThread = m_pixel_size.y / numThreads;
-    // extra credit
-    int extra = m_pixel_size.y % numThreads;
+    std::vector<std::thread> threads; // extra credit
+    threads.reserve(numThreads); // extra credit
 
-    // extra credit
-    std::vector<std::thread> threads;
-    // extra credit
-    threads.reserve(numThreads);
+    int rowsPerThread = m_pixel_size.y / static_cast<int>(numThreads); // extra credit
+    int extra = m_pixel_size.y % static_cast<int>(numThreads); // extra credit
 
-    // extra credit
-    int y = 0;
-    // extra credit
-    for (unsigned int t = 0; t < numThreads; t++) {
-        // extra credit
-        int start = y;
-        // extra credit
-        int end = start + rowsPerThread + (t < (unsigned)extra ? 1 : 0);
-        // extra credit
-        y = end;
-        // extra credit
-        threads.emplace_back(&ComplexPlane::renderRows, this, start, end);
+    int yStart = 0; // extra credit
+    for (unsigned int t = 0; t < numThreads; t++) { // extra credit
+        int yEnd = yStart + rowsPerThread + (t < static_cast<unsigned int>(extra) ? 1 : 0); // extra credit
+        threads.emplace_back(&ComplexPlane::renderRows, this, yStart, yEnd); // extra credit
+        yStart = yEnd; // extra credit
     }
 
-    // extra credit
-    for (auto& th : threads) th.join();
+    for (auto& th : threads) th.join(); // extra credit
 
     m_state = State::DISPLAYING;
 }
 
 void ComplexPlane::zoomIn() {
-    m_zoomCount++;
-    float scale = pow(BASE_ZOOM, m_zoomCount);
-    m_plane_size.x = BASE_WIDTH * scale;
-    m_plane_size.y = BASE_HEIGHT * m_aspectRatio * scale;
-    m_state = State::CALCULATING;
+    m_zoomCount++; // extra credit
+    float scale = std::pow(BASE_ZOOM, m_zoomCount); // extra credit
+    m_plane_size.x = BASE_WIDTH * scale; // extra credit
+    m_plane_size.y = BASE_HEIGHT * m_aspectRatio * scale; // extra credit
+    m_state = State::CALCULATING; // extra credit
 }
 
 void ComplexPlane::zoomOut() {
-    m_zoomCount--;
-    float scale = pow(BASE_ZOOM, m_zoomCount);
-    m_plane_size.x = BASE_WIDTH * scale;
-    m_plane_size.y = BASE_HEIGHT * m_aspectRatio * scale;
-    m_state = State::CALCULATING;
+    m_zoomCount--; // extra credit
+    float scale = std::pow(BASE_ZOOM, m_zoomCount); // extra credit
+    m_plane_size.x = BASE_WIDTH * scale; // extra credit
+    m_plane_size.y = BASE_HEIGHT * m_aspectRatio * scale; // extra credit
+    m_state = State::CALCULATING; // extra credit
 }
 
 void ComplexPlane::setCenter(Vector2i mousePixel) {
