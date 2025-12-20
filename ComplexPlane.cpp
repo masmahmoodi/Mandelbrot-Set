@@ -1,3 +1,4 @@
+
 #include "ComplexPlane.h"
 #include <cmath>
 #include <sstream>
@@ -11,7 +12,7 @@ ComplexPlane::ComplexPlane(int pixelWidth, int pixelHeight)
       m_pixel_size(pixelWidth, pixelHeight),
       m_plane_center(0.f, 0.f),
       m_plane_size(BASE_WIDTH, BASE_HEIGHT),
-      m_zoomCount(0) 
+      m_zoomCount(0)
 {
     m_aspectRatio = static_cast<float>(pixelHeight) / pixelWidth;
     m_plane_size.y = BASE_HEIGHT * m_aspectRatio;
@@ -56,14 +57,13 @@ void ComplexPlane::iterationsToRGB(size_t count, Uint8& r, Uint8& g, Uint8& b) {
     b = static_cast<Uint8>(8.5 * (1 - t) * (1 - t) * (1 - t) * t * 255);
 }
 
-void ComplexPlane::updateRender() {
-    if (m_state != State::CALCULATING) return;
-
-    for (int y = 0; y < m_pixel_size.y; y++) {
+// extra credit
+void ComplexPlane::renderRows(int yStart, int yEnd) {
+    for (int y = yStart; y < yEnd; y++) {
         for (int x = 0; x < m_pixel_size.x; x++) {
             int index = y * m_pixel_size.x + x;
 
-            m_vArray[index].position = Vector2f(static_cast<float>(x), static_cast<float>(y));
+            m_vArray[index].position = Vector2f((float)x, (float)y);
 
             Vector2f coord = mapPixelToCoords(Vector2i(x, y));
             size_t count = countIterations(coord);
@@ -73,6 +73,44 @@ void ComplexPlane::updateRender() {
             m_vArray[index].color = Color(r, g, b);
         }
     }
+}
+
+void ComplexPlane::updateRender() {
+    if (m_state != State::CALCULATING) return;
+
+    // extra credit
+    unsigned int numThreads = std::thread::hardware_concurrency();
+    // extra credit
+    if (numThreads == 0) numThreads = 4;
+    // extra credit
+    if (numThreads > (unsigned)m_pixel_size.y) numThreads = m_pixel_size.y;
+
+    // extra credit
+    int rowsPerThread = m_pixel_size.y / numThreads;
+    // extra credit
+    int extra = m_pixel_size.y % numThreads;
+
+    // extra credit
+    std::vector<std::thread> threads;
+    // extra credit
+    threads.reserve(numThreads);
+
+    // extra credit
+    int y = 0;
+    // extra credit
+    for (unsigned int t = 0; t < numThreads; t++) {
+        // extra credit
+        int start = y;
+        // extra credit
+        int end = start + rowsPerThread + (t < (unsigned)extra ? 1 : 0);
+        // extra credit
+        y = end;
+        // extra credit
+        threads.emplace_back(&ComplexPlane::renderRows, this, start, end);
+    }
+
+    // extra credit
+    for (auto& th : threads) th.join();
 
     m_state = State::DISPLAYING;
 }
