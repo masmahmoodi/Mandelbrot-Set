@@ -1,4 +1,7 @@
+<<<<<<< HEAD
 // ComplexPlane.cpp
+=======
+>>>>>>> 619e69d (the pre version)
 #include "ComplexPlane.h"
 #include <cmath>
 #include <sstream>
@@ -11,7 +14,7 @@ ComplexPlane::ComplexPlane(int pixelWidth, int pixelHeight)
       m_pixel_size(pixelWidth, pixelHeight),
       m_plane_center(0.f, 0.f),
       m_plane_size(BASE_WIDTH, BASE_HEIGHT),
-      m_zoomCount(0)
+      m_zoomCount(0) 
 {
     m_aspectRatio = static_cast<float>(pixelHeight) / pixelWidth;
     m_plane_size.y = BASE_HEIGHT * m_aspectRatio;
@@ -55,8 +58,15 @@ void ComplexPlane::iterationsToRGB(size_t count, Uint8& r, Uint8& g, Uint8& b) {
     b = static_cast<Uint8>(8.5 * (1 - t) * (1 - t) * (1 - t) * t * 255);
 }
 
+<<<<<<< HEAD
 void ComplexPlane::renderRows(int yStart, int yEnd) { // extra credit
     for (int y = yStart; y < yEnd; y++) {
+=======
+void ComplexPlane::updateRender() {
+    if (m_state != State::CALCULATING) return;
+
+    for (int y = 0; y < m_pixel_size.y; y++) {
+>>>>>>> 619e69d (the pre version)
         for (int x = 0; x < m_pixel_size.x; x++) {
             int index = y * m_pixel_size.x + x;
 
@@ -70,6 +80,7 @@ void ComplexPlane::renderRows(int yStart, int yEnd) { // extra credit
             m_vArray[index].color = Color(r, g, b);
         }
     }
+<<<<<<< HEAD
 }
 
 void ComplexPlane::updateRender() {
@@ -93,6 +104,8 @@ void ComplexPlane::updateRender() {
     }
 
     for (auto& th : threads) th.join(); // extra credit
+=======
+>>>>>>> 619e69d (the pre version)
 
     m_state = State::DISPLAYING;
 }
