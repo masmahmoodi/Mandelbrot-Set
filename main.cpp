@@ -23,8 +23,9 @@ int main() {
     while (window.isOpen()) {
         Event event;
         while (window.pollEvent(event)) {
-            if (event.type == Event::Closed)
+            if (event.type == Event::Closed) {
                 window.close();
+            }
 
             if (event.type == Event::MouseMoved) {
                 plane.setMouseLocation(Vector2i(event.mouseMove.x, event.mouseMove.y));
@@ -34,4 +35,39 @@ int main() {
                 plane.setCenter(Vector2i(event.mouseButton.x, event.mouseButton.y));
 
                 if (event.mouseButton.button == Mouse::Left) {
-                    if (Keyboard::isKeyPressed(Keyboard::LControl) || Keyboard::isKeyPressed(K
+                    if (Keyboard::isKeyPressed(Keyboard::LControl) || Keyboard::isKeyPressed(Keyboard::RControl) ||
+                        Keyboard::isKeyPressed(Keyboard::LShift)   || Keyboard::isKeyPressed(Keyboard::RShift)) {
+                        plane.zoomOut(); // extra credit
+                        plane.setLastClick('O'); // extra credit
+                    } else {
+                        plane.zoomIn();
+                        plane.setLastClick('I'); // extra credit
+                    }
+                } else if (event.mouseButton.button == Mouse::Right) {
+                    plane.zoomOut();
+                    plane.setLastClick('O'); // extra credit
+                }
+            }
+
+            if (event.type == Event::KeyPressed) {
+                if (event.key.code == Keyboard::Equal) {
+                    plane.zoomIn(); // extra credit
+                    plane.setLastClick('I'); // extra credit
+                } else if (event.key.code == Keyboard::Hyphen) {
+                    plane.zoomOut(); // extra credit
+                    plane.setLastClick('O'); // extra credit
+                }
+            }
+        }
+
+        plane.updateRender();
+        plane.loadText(hud);
+
+        window.clear();
+        window.draw(plane);
+        window.draw(hud);
+        window.display();
+    }
+
+    return 0;
+}
