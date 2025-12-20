@@ -1,4 +1,3 @@
-// main.cpp
 #include <SFML/Graphics.hpp>
 #include "ComplexPlane.h"
 
@@ -22,8 +21,10 @@ int main() {
     hud.setPosition(10, 10);
 
     while (window.isOpen()) {
+
         Event event;
         while (window.pollEvent(event)) {
+
             if (event.type == Event::Closed)
                 window.close();
 
@@ -31,16 +32,35 @@ int main() {
                 plane.setMouseLocation(Vector2i(event.mouseMove.x, event.mouseMove.y));
             }
 
-            if (event.type == Event::MouseButtonPressed) {
-                if (event.mouseButton.button == Mouse::Left) {
-                    plane.setCenter(Vector2i(event.mouseButton.x, event.mouseButton.y));
-                    plane.zoomIn(); // extra credit
-                }
-                else if (event.mouseButton.button == Mouse::Right) {
-                    plane.setCenter(Vector2i(event.mouseButton.x, event.mouseButton.y));
-                    plane.zoomOut(); // extra credit
-                }
+            // LEFT CLICK = ZOOM IN (always works)
+            if (event.type == Event::MouseButtonPressed &&
+                event.mouseButton.button == Mouse::Left) {
+
+                plane.setCenter(Vector2i(event.mouseButton.x, event.mouseButton.y));
+                plane.zoomIn();
             }
+
+            // MOUSE WHEEL = ZOOM IN / OUT (VDI-safe)
+            if (event.type == Event::MouseWheelScrolled) {
+                plane.setCenter(Vector2i(event.mouseWheelScroll.x,
+                                         event.mouseWheelScroll.y));
+
+                if (event.mouseWheelScroll.delta > 0)
+                    plane.zoomIn();
+                else
+                    plane.zoomOut();
+            }
+        }
+
+        // KEYBOARD ZOOM (guaranteed fallback)
+        if (Keyboard::isKeyPressed(Keyboard::Equal) ||
+            Keyboard::isKeyPressed(Keyboard::Add)) {
+            plane.zoomIn();
+        }
+
+        if (Keyboard::isKeyPressed(Keyboard::Hyphen) ||
+            Keyboard::isKeyPressed(Keyboard::Subtract)) {
+            plane.zoomOut();
         }
 
         plane.updateRender();

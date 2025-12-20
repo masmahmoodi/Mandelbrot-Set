@@ -2,7 +2,6 @@
 #include "ComplexPlane.h"
 #include <cmath>
 #include <sstream>
-#include <iomanip>
 
 using namespace sf;
 
@@ -41,7 +40,6 @@ size_t ComplexPlane::countIterations(Vector2f coord) {
         z = z * z + c;
         i++;
     }
-
     return i;
 }
 
@@ -100,19 +98,19 @@ void ComplexPlane::updateRender() {
 }
 
 void ComplexPlane::zoomIn() {
-    m_zoomCount++; // extra credit
-    float scale = std::pow(BASE_ZOOM, m_zoomCount); // extra credit
-    m_plane_size.x = BASE_WIDTH * scale; // extra credit
-    m_plane_size.y = BASE_HEIGHT * m_aspectRatio * scale; // extra credit
-    m_state = State::CALCULATING; // extra credit
+    m_zoomCount++;
+    float scale = std::pow(BASE_ZOOM, m_zoomCount);
+    m_plane_size.x = BASE_WIDTH * scale;
+    m_plane_size.y = BASE_HEIGHT * m_aspectRatio * scale;
+    m_state = State::CALCULATING;
 }
 
 void ComplexPlane::zoomOut() {
-    m_zoomCount--; // extra credit
-    float scale = std::pow(BASE_ZOOM, m_zoomCount); // extra credit
-    m_plane_size.x = BASE_WIDTH * scale; // extra credit
-    m_plane_size.y = BASE_HEIGHT * m_aspectRatio * scale; // extra credit
-    m_state = State::CALCULATING; // extra credit
+    m_zoomCount--;
+    float scale = std::pow(BASE_ZOOM, m_zoomCount);
+    m_plane_size.x = BASE_WIDTH * scale;
+    m_plane_size.y = BASE_HEIGHT * m_aspectRatio * scale;
+    m_state = State::CALCULATING;
 }
 
 void ComplexPlane::setCenter(Vector2i mousePixel) {
@@ -129,7 +127,8 @@ void ComplexPlane::loadText(Text& text) {
     ss << "Mandelbrot Set\n";
     ss << "Center: (" << m_plane_center.x << "," << m_plane_center.y << ")\n";
     ss << "Cursor: (" << m_mouseLocation.x << "," << m_mouseLocation.y << ")\n";
-    ss << "Left-click to Zoom in\nRight-click to Zoom out";
-
+    ss << "Left-click: Zoom in\n";
+    ss << "Right-click: Zoom out\n";
+    ss << "Mouse wheel: Zoom in/out"; // extra credit
     text.setString(ss.str());
 }
