@@ -32,15 +32,29 @@ int main() {
                 plane.setMouseLocation(Vector2i(event.mouseMove.x, event.mouseMove.y));
             }
 
-            // LEFT CLICK = ZOOM IN (always works)
-            if (event.type == Event::MouseButtonPressed &&
-                event.mouseButton.button == Mouse::Left) {
+            // MOUSE CLICK ZOOM (FIXED)
+            if (event.type == Event::MouseButtonPressed) {
 
-                plane.setCenter(Vector2i(event.mouseButton.x, event.mouseButton.y));
-                plane.zoomIn();
+                // LEFT CLICK = ZOOM IN
+                if (event.mouseButton.button == Mouse::Left &&
+                    !Keyboard::isKeyPressed(Keyboard::LControl)) {
+
+                    plane.setCenter(Vector2i(event.mouseButton.x, event.mouseButton.y));
+                    plane.zoomIn();
+                }
+
+                // RIGHT CLICK = ZOOM OUT
+                // (Ctrl + Click on Mac is treated as right click)
+                if (event.mouseButton.button == Mouse::Right ||
+                    (event.mouseButton.button == Mouse::Left &&
+                     Keyboard::isKeyPressed(Keyboard::LControl))) {
+
+                    plane.setCenter(Vector2i(event.mouseButton.x, event.mouseButton.y));
+                    plane.zoomOut();
+                }
             }
 
-            // MOUSE WHEEL = ZOOM IN / OUT (VDI-safe)
+            // MOUSE WHEEL ZOOM
             if (event.type == Event::MouseWheelScrolled) {
                 plane.setCenter(Vector2i(event.mouseWheelScroll.x,
                                          event.mouseWheelScroll.y));
@@ -52,7 +66,7 @@ int main() {
             }
         }
 
-        // KEYBOARD ZOOM (guaranteed fallback)
+        // KEYBOARD ZOOM (FALLBACK)
         if (Keyboard::isKeyPressed(Keyboard::Equal) ||
             Keyboard::isKeyPressed(Keyboard::Add)) {
             plane.zoomIn();
