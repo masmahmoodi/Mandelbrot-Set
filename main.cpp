@@ -1,4 +1,5 @@
 #include <SFML/Graphics.hpp>
+#include <iostream>
 #include "ComplexPlane.h"
 
 using namespace sf;
@@ -32,29 +33,35 @@ int main() {
                 plane.setMouseLocation(Vector2i(event.mouseMove.x, event.mouseMove.y));
             }
 
-            // MOUSE CLICK ZOOM (FIXED)
+            // ==============================
+            // MOUSE CLICK ZOOM (FINAL FIX)
+            // ==============================
             if (event.type == Event::MouseButtonPressed) {
 
-                // LEFT CLICK = ZOOM IN
-                if (event.mouseButton.button == Mouse::Left &&
-                    !Keyboard::isKeyPressed(Keyboard::LControl)) {
+                bool isCtrl =
+                    Keyboard::isKeyPressed(Keyboard::LControl) ||
+                    Keyboard::isKeyPressed(Keyboard::RControl);
 
-                    plane.setCenter(Vector2i(event.mouseButton.x, event.mouseButton.y));
-                    plane.zoomIn();
-                }
+                bool zoomOut =
+                    (event.mouseButton.button == Mouse::Right) ||
+                    (event.mouseButton.button == Mouse::Left && isCtrl);
 
-                // RIGHT CLICK = ZOOM OUT
-                // (Ctrl + Click on Mac is treated as right click)
-                if (event.mouseButton.button == Mouse::Right ||
-                    (event.mouseButton.button == Mouse::Left &&
-                     Keyboard::isKeyPressed(Keyboard::LControl))) {
+                bool zoomIn =
+                    (event.mouseButton.button == Mouse::Left && !zoomOut);
 
-                    plane.setCenter(Vector2i(event.mouseButton.x, event.mouseButton.y));
+                plane.setCenter(Vector2i(event.mouseButton.x, event.mouseButton.y));
+
+                if (zoomOut) {
                     plane.zoomOut();
+                }
+                else if (zoomIn) {
+                    plane.zoomIn();
                 }
             }
 
+            // ==============================
             // MOUSE WHEEL ZOOM
+            // ==============================
             if (event.type == Event::MouseWheelScrolled) {
                 plane.setCenter(Vector2i(event.mouseWheelScroll.x,
                                          event.mouseWheelScroll.y));
@@ -66,7 +73,9 @@ int main() {
             }
         }
 
+        // ==============================
         // KEYBOARD ZOOM (FALLBACK)
+        // ==============================
         if (Keyboard::isKeyPressed(Keyboard::Equal) ||
             Keyboard::isKeyPressed(Keyboard::Add)) {
             plane.zoomIn();
