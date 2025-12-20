@@ -1,9 +1,8 @@
-// ComplexPlane.h
 #pragma once
 #include <SFML/Graphics.hpp>
 #include <complex>
-#include <thread>
-#include <vector>
+#include <thread>  // extra credit
+#include <vector>  // extra credit
 
 const unsigned int MAX_ITER = 64;
 const float BASE_WIDTH = 4.0f;
@@ -22,6 +21,8 @@ public:
     void setMouseLocation(sf::Vector2i mousePixel);
     void loadText(sf::Text& text);
 
+    void setLastClick(char c); // extra credit
+
 private:
     virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const;
 
@@ -34,9 +35,11 @@ private:
     int m_zoomCount;
     float m_aspectRatio;
 
+    char m_lastClick; // extra credit
+
     sf::Vector2f mapPixelToCoords(sf::Vector2i pixel);
     size_t countIterations(sf::Vector2f coord);
     void iterationsToRGB(size_t count, sf::Uint8& r, sf::Uint8& g, sf::Uint8& b);
 
-    void renderRows(int yStart, int yEnd);
+    void computeRows(int startRow, int endRow); // extra credit
 };
