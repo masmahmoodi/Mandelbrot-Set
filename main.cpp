@@ -1,3 +1,4 @@
+// main.cpp
 #include <SFML/Graphics.hpp>
 #include "ComplexPlane.h"
 
@@ -35,11 +36,20 @@ int main() {
                     plane.setCenter(Vector2i(event.mouseButton.x, event.mouseButton.y));
                     plane.zoomIn();
                 }
-                if (event.mouseButton.button == Mouse::Right) {
-                    plane.setCenter(Vector2i(event.mouseButton.x, event.mouseButton.y));
-                    plane.zoomOut();
-                }
             }
+
+            if (event.type == Event::MouseWheelScrolled) {
+                plane.setCenter(Vector2i(event.mouseWheelScroll.x, event.mouseWheelScroll.y));
+                if (event.mouseWheelScroll.delta > 0) plane.zoomIn();
+                else if (event.mouseWheelScroll.delta < 0) plane.zoomOut();
+            }
+        }
+
+        if (Keyboard::isKeyPressed(Keyboard::Equal) || Keyboard::isKeyPressed(Keyboard::Add)) {
+            plane.zoomIn();
+        }
+        if (Keyboard::isKeyPressed(Keyboard::Hyphen) || Keyboard::isKeyPressed(Keyboard::Subtract)) {
+            plane.zoomOut();
         }
 
         plane.updateRender();

@@ -1,7 +1,7 @@
+// ComplexPlane.cpp
 #include "ComplexPlane.h"
 #include <cmath>
 #include <sstream>
-#include <iomanip>
 
 using namespace sf;
 
@@ -11,7 +11,7 @@ ComplexPlane::ComplexPlane(int pixelWidth, int pixelHeight)
       m_pixel_size(pixelWidth, pixelHeight),
       m_plane_center(0.f, 0.f),
       m_plane_size(BASE_WIDTH, BASE_HEIGHT),
-      m_zoomCount(0) 
+      m_zoomCount(0)
 {
     m_aspectRatio = static_cast<float>(pixelHeight) / pixelWidth;
     m_plane_size.y = BASE_HEIGHT * m_aspectRatio;
@@ -40,7 +40,6 @@ size_t ComplexPlane::countIterations(Vector2f coord) {
         z = z * z + c;
         i++;
     }
-
     return i;
 }
 
@@ -56,10 +55,8 @@ void ComplexPlane::iterationsToRGB(size_t count, Uint8& r, Uint8& g, Uint8& b) {
     b = static_cast<Uint8>(8.5 * (1 - t) * (1 - t) * (1 - t) * t * 255);
 }
 
-void ComplexPlane::updateRender() {
-    if (m_state != State::CALCULATING) return;
-
-    for (int y = 0; y < m_pixel_size.y; y++) {
+void ComplexPlane::renderRows(int yStart, int yEnd) {
+    for (int y = yStart; y < yEnd; y++) {
         for (int x = 0; x < m_pixel_size.x; x++) {
             int index = y * m_pixel_size.x + x;
 
@@ -73,23 +70,44 @@ void ComplexPlane::updateRender() {
             m_vArray[index].color = Color(r, g, b);
         }
     }
+}
+
+void ComplexPlane::updateRender() {
+    if (m_state != State::CALCULATING) return;
+
+    unsigned int numThreads = std::thread::hardware_concurrency();
+    if (numThreads == 0) numThreads = 4;
+    if (numThreads > static_cast<unsigned int>(m_pixel_size.y)) numThreads = m_pixel_size.y;
+
+    std::vector<std::thread> threads;
+    threads.reserve(numThreads);
+
+    int rowsPerThread = m_pixel_size.y / static_cast<int>(numThreads);
+    int extra = m_pixel_size.y % static_cast<int>(numThreads);
+
+    int yStart = 0;
+    for (unsigned int t = 0; t < numThreads; t++) {
+        int yEnd = yStart + rowsPerThread + (t < static_cast<unsigned int>(extra) ? 1 : 0);
+        threads.emplace_back(&ComplexPlane::renderRows, this, yStart, yEnd);
+        yStart = yEnd;
+    }
+
+    for (auto& th : threads) th.join();
 
     m_state = State::DISPLAYING;
 }
 
 void ComplexPlane::zoomIn() {
     m_zoomCount++;
-    float scale = pow(BASE_ZOOM, m_zoomCount);
-    m_plane_size.x = BASE_WIDTH * scale;
-    m_plane_size.y = BASE_HEIGHT * m_aspectRatio * scale;
+    m_plane_size.x *= BASE_ZOOM;
+    m_plane_size.y *= BASE_ZOOM;
     m_state = State::CALCULATING;
 }
 
 void ComplexPlane::zoomOut() {
     m_zoomCount--;
-    float scale = pow(BASE_ZOOM, m_zoomCount);
-    m_plane_size.x = BASE_WIDTH * scale;
-    m_plane_size.y = BASE_HEIGHT * m_aspectRatio * scale;
+    m_plane_size.x /= BASE_ZOOM;
+    m_plane_size.y /= BASE_ZOOM;
     m_state = State::CALCULATING;
 }
 
@@ -107,7 +125,11 @@ void ComplexPlane::loadText(Text& text) {
     ss << "Mandelbrot Set\n";
     ss << "Center: (" << m_plane_center.x << "," << m_plane_center.y << ")\n";
     ss << "Cursor: (" << m_mouseLocation.x << "," << m_mouseLocation.y << ")\n";
-    ss << "Left-click to Zoom in\nRight-click to Zoom out";
+    ss << "ZoomCount: " << m_zoomCount << "\n";
+    ss << "Size: (" << m_plane_size.x << "," << m_plane_size.y << ")\n";
+    ss << "Left-click: Zoom in\n";
+    ss << "Mouse wheel / - : Zoom out\n";
+    ss << "+/= : Zoom in\n";
 
     text.setString(ss.str());
 }
