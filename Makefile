@@ -1,11 +1,6 @@
 CXX = g++
-<<<<<<< HEAD
-CXXFLAGS = -std=c++17 -O2 -pthread
-LIBS = -lsfml-graphics -lsfml-window -lsfml-system -pthread
-=======
 CXXFLAGS = -std=c++17
 LIBS = -lsfml-graphics -lsfml-window -lsfml-system
->>>>>>> 619e69d (the pre version)
 
 all: mandelbrot
 

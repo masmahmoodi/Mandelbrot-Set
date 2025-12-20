@@ -21,10 +21,8 @@ int main() {
     hud.setPosition(10, 10);
 
     while (window.isOpen()) {
-
         Event event;
         while (window.pollEvent(event)) {
-
             if (event.type == Event::Closed)
                 window.close();
 
@@ -32,49 +30,16 @@ int main() {
                 plane.setMouseLocation(Vector2i(event.mouseMove.x, event.mouseMove.y));
             }
 
-            // =========================================
-            // CLICK ZOOM (WORKS ON VDI/MAC + REAL MOUSE)
-            // Left click  -> zoom in
-            // Right click -> zoom out (if SFML receives Mouse::Right)
-            // Ctrl+Left   -> zoom out (VDI/Mac "right click" fallback)
-            // =========================================
             if (event.type == Event::MouseButtonPressed) {
-
-                bool isCtrl =
-                    Keyboard::isKeyPressed(Keyboard::LControl) ||
-                    Keyboard::isKeyPressed(Keyboard::RControl);
-
-                bool zoomOut =
-                    (event.mouseButton.button == Mouse::Right) ||
-                    (event.mouseButton.button == Mouse::Left && isCtrl);
-
-                plane.setCenter(Vector2i(event.mouseButton.x, event.mouseButton.y));
-
-                if (zoomOut) plane.zoomOut();
-                else         plane.zoomIn();
-            }
-
-            // MOUSE WHEEL = ZOOM IN / OUT
-            if (event.type == Event::MouseWheelScrolled) {
-                plane.setCenter(Vector2i(event.mouseWheelScroll.x,
-                                         event.mouseWheelScroll.y));
-
-                if (event.mouseWheelScroll.delta > 0)
+                if (event.mouseButton.button == Mouse::Left) {
+                    plane.setCenter(Vector2i(event.mouseButton.x, event.mouseButton.y));
                     plane.zoomIn();
-                else
+                }
+                if (event.mouseButton.button == Mouse::Right) {
+                    plane.setCenter(Vector2i(event.mouseButton.x, event.mouseButton.y));
                     plane.zoomOut();
+                }
             }
-        }
-
-        // KEYBOARD ZOOM (fallback)
-        if (Keyboard::isKeyPressed(Keyboard::Equal) ||
-            Keyboard::isKeyPressed(Keyboard::Add)) {
-            plane.zoomIn();
-        }
-
-        if (Keyboard::isKeyPressed(Keyboard::Hyphen) ||
-            Keyboard::isKeyPressed(Keyboard::Subtract)) {
-            plane.zoomOut();
         }
 
         plane.updateRender();
