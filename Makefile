@@ -1,7 +1,6 @@
-# Makefile
 CXX = g++
-CXXFLAGS = -std=c++17
-LIBS = -lsfml-graphics -lsfml-window -lsfml-system
+CXXFLAGS = -std=c++17 -O2
+LIBS = -lsfml-graphics -lsfml-window -lsfml-system -pthread
 
 all: mandelbrot
 
