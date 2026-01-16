@@ -53,11 +53,7 @@ void ComplexPlane::iterationsToRGB(size_t count, Uint8& r, Uint8& g, Uint8& b) {
     b = static_cast<Uint8>(8.5f * (1 - t) * (1 - t) * (1 - t) * t * 255);
 }
 
-/* ============================================================
-   PART 1 (EXTRA CREDIT):
-   Each thread computes Mandelbrot values for a specific range
-   of rows, preventing race conditions.
-   ============================================================ */
+
 void ComplexPlane::computeRows(int startRow, int endRow) {
     for (int y = startRow; y < endRow; y++) {
         for (int x = 0; x < m_pixel_size.x; x++) {
@@ -74,24 +70,19 @@ void ComplexPlane::computeRows(int startRow, int endRow) {
     }
 }
 
-/* ============================================================
-   PART 2 (EXTRA CREDIT):
-   Multithreaded rendering using 4 threads.
-   The image is split vertically and each thread works on its
-   own quarter of the image.
-   ============================================================ */
+
 void ComplexPlane::updateRender() {
     if (m_state != State::CALCULATING) return;
 
     int rows = m_pixel_size.y;
 
-    // PART 3 (EXTRA CREDIT): Launch 4 worker threads
+   
     std::thread t1(&ComplexPlane::computeRows, this, 0, rows / 4);
     std::thread t2(&ComplexPlane::computeRows, this, rows / 4, rows / 2);
     std::thread t3(&ComplexPlane::computeRows, this, rows / 2, 3 * rows / 4);
     std::thread t4(&ComplexPlane::computeRows, this, 3 * rows / 4, rows);
 
-    // PART 3 (EXTRA CREDIT): Synchronize all threads
+  
     t1.join();
     t2.join();
     t3.join();

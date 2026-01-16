@@ -1,7 +1,7 @@
 #pragma once
 #include <SFML/Graphics.hpp>
 #include <complex>
-#include <thread>  // extra credit
+#include <thread>  
 #include <vector>  // extra credit
 
 const unsigned int MAX_ITER = 64;
@@ -35,11 +35,10 @@ private:
     int m_zoomCount;
     float m_aspectRatio;
 
-    char m_lastClick; // extra credit
-
+    char m_lastClick; 
     sf::Vector2f mapPixelToCoords(sf::Vector2i pixel);
     size_t countIterations(sf::Vector2f coord);
     void iterationsToRGB(size_t count, sf::Uint8& r, sf::Uint8& g, sf::Uint8& b);
 
-    void computeRows(int startRow, int endRow); // extra credit
+    void computeRows(int startRow, int endRow); 
 };
